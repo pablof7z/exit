@@ -1,6 +1,7 @@
 <script lang="ts">
     import NDK, { NDKEvent, NDKNip07Signer, NDKPrivateKeySigner, NDKRelayList, NDKRelaySet, NDKUser, type NDKRelayUrl, type NostrEvent } from "@nostr-dev-kit/ndk";
     import { EventCard } from "@nostr-dev-kit/ndk-svelte-components";
+    import FAQ from "./FAQ.svelte";
     import { browser } from "$app/environment";
     import { requestProvider } from 'webln';
 	import RelativeTime from "./RelativeTime.svelte";
@@ -419,6 +420,11 @@
                 }, 1);
             });
         }
+
+        if (publishedEvents.size < includedEventCount) {
+            alert(`Could not publish all events, click "CONTINUE" to try the failed events again`);
+            continueButton = true;
+        }
     }
 
     let satsPerTweet: number | undefined = 50;
@@ -487,6 +493,10 @@
 
         </div>
     </div>
+
+    <FAQ />
+
+    <h2 class="text-2xl font-bold mt-4">Import</h2>
 
     {#if !nip07Available}
         <div class="alert alert-neutral my-6">
@@ -749,7 +759,7 @@
     {/if}
 
     <div class="flex flex-row items-center gap-4">
-        <button class="btn btn-lg btn-wide btn-primary whitespace-nowrap flex-nowrap" on:click={publishEvents} disabled={includedEventCount === 0 || publishedEvents.size > 0}>
+        <button class="btn btn-lg btn-wide btn-primary whitespace-nowrap flex-nowrap" on:click={publishEvents} disabled={(includedEventCount === 0 || publishedEvents.size > 0) && !continueButton}>
             {#if !continueButton}
                 Publish events
             {:else}
